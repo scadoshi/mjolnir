@@ -1,22 +1,28 @@
-mod action;
 mod client;
 mod config;
+mod endpoint;
+mod models;
 mod token;
 
-use crate::{action::Action, client::AuthenticatedClient};
-use jiff::{tz::TimeZone, Timestamp};
+use crate::{
+    client::AuthenticatedClient,
+    endpoint::Endpoint,
+    models::consignment::{ConsignmentRequest, ConsignmentResponse},
+};
 
 fn main() -> anyhow::Result<()> {
     let mut client = AuthenticatedClient::new()?;
     println!("✔  Authenticated");
-    let action = Action::new(
-        "Rust App",
-        Timestamp::now().to_zoned(TimeZone::UTC).datetime(),
-        "<p><b>Testing actions</b></p><p><ol><li>Item 1</li><li>Item 2</li></ol></p>",
-        "Note Added via API",
-        2997,
-    );
-    client.post_action(action)?;
-    println!("✔  Action Posted");
+    let consignment_request = ConsignmentRequest::test();
+    let json = client.post(
+        Endpoint::Consignment,
+        &[serde_json::to_value(consignment_request)?],
+    )?;
+    println!("✔  Request Body Posted");
+    let consignment_response = serde_json::from_value::<ConsignmentResponse>(json)?;
+    // println!("✔ ");
+    println!("✔  ConsignmentResponse Parsed");
+    client.delete(Endpoint::Consignment, consignment_response.id())?;
+    println!("✔  Cosnsignment Deleted");
     Ok(())
 }
