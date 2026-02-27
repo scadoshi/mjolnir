@@ -1,4 +1,4 @@
-use jiff::{civil::DateTime, tz::TimeZone, Timestamp};
+use jiff::{Timestamp, civil::DateTime, tz::TimeZone};
 use std::time::Duration;
 
 #[derive(Debug, serde::Deserialize)]
