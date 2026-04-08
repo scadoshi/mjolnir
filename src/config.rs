@@ -1,4 +1,5 @@
-use reqwest::blocking::Client;
+use reqwest::{StatusCode, blocking::Client};
+use serde_json::Value;
 
 use crate::token::{RawToken, Token};
 
@@ -21,14 +22,22 @@ impl Config {
         })
     }
     pub fn get_token(&self) -> anyhow::Result<Token> {
-        let result = Client::new()
+        let response = Client::new()
             .post(self.url.clone().join("auth/token")?)
             .header("Content-Type", "application/x-www-form-urlencoded")
             .basic_auth(&self.client_id, Some(&self.client_secret))
             .body("grant_type=client_credentials&scope=all")
             .send()?;
-        let raw_token: RawToken = serde_json::from_str(&result.text()?)?;
-        let token = Token::from(raw_token);
-        Ok(token)
+        match response.status() {
+            StatusCode::OK | StatusCode::CREATED => {
+                let raw_token: RawToken = response.json()?;
+                Ok(Token::from(raw_token))
+            }
+            status => Err(anyhow::anyhow!(
+                "Token request failed with status code: {} and response: {}",
+                status,
+                response.json::<Value>()?
+            )),
+        }
     }
 }
