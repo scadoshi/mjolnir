@@ -3,19 +3,6 @@
 version = 4
 
 [[package]]
-name = "angel"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "dotenvy",
- "jiff",
- "reqwest",
- "serde",
- "serde_json",
- "url",
-]
-
-[[package]]
 name = "anyhow"
 version = "1.0.101"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -679,6 +666,19 @@ dependencies = [
  "libc",
  "wasi",
  "windows-sys 0.61.2",
+]
+
+[[package]]
+name = "mjolnir"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "jiff",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "url",
 ]
 
 [[package]]
